@@ -1,0 +1,5 @@
+source/.vs/
+source/packages/
+**/bin/Debug/
+**/bin/Release/
+**/obj/
