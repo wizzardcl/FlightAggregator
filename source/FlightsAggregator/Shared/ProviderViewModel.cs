@@ -12,6 +12,9 @@ public sealed class SearchResultViewModel
 	public Guid ProviderId { get; set; }
 	public string ProviderName { get; set; } = string.Empty;
 
+	public bool Success { get; set; } = true;
+	public string Message { get; set; } = string.Empty;
+
 	public SearchItemViewModel[] Items { get; set; } = Array.Empty<SearchItemViewModel>();
 }
 
@@ -24,7 +27,7 @@ public sealed class SearchItemViewModel
 
 public sealed class SearchViewModel
 {
-	public Guid ProviderId { get; set; }
+	public Guid? ProviderId { get; set; }
 	public string From { get; set; }
 	public string To { get; set; }
 	public DateTime Time { get; set; } = DateTime.Now;

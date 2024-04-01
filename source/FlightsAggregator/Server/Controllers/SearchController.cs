@@ -15,8 +15,8 @@ public sealed class SearchController : ControllerBase
 		_service = service;
 	}
 
-	[HttpGet("get/{providerId:guid}/{from}/{to}/{time:datetime}")]
-	public async Task<SearchResultViewModel> Search(Guid providerId, string from, string to, DateTime time)
+	[HttpGet("get-for/{from}/{to}/{time:datetime}/{providerId:guid?}")]
+	public async Task<SearchResultViewModel[]> Search(Guid? providerId, string from, string to, DateTime time)
 	{
 		return await _service.Search(new SearchViewModel { ProviderId = providerId, From = from, To = to, Time = time });
 	}

@@ -13,6 +13,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddTransient<ISearchService, SearchService>();
 builder.Services.AddTransient<ISearchProvider, RandomSearchProvider>();
 builder.Services.AddTransient<ISearchProvider, SlowRandomSearchProvider>();
+builder.Services.AddTransient<ISearchProvider, TimeoutSearchProvider>();
+builder.Services.AddTransient<ISearchProvider, ExceptionSearchProvider>();
 
 var app = builder.Build();
 

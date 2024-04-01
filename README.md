@@ -1,12 +1,12 @@
 # FlightAggregator
 Test Task
 
-
+Tasks:
 +1 - Create repository and a basic implementation
 #2 - Create a few providers (Random, Low Latency Random, With Timeout, With Random Timeout, From a file)
-#3 - An endpoint which will provider data from all providers with pagination
-#4 - Handle and log exception from providers
-#5 - Provider's timeout
++3 - An endpoint which will provider data from all providers with pagination
++4 - Handle and log exception from providers
++5 - Provider's timeout
 #6 - Book a ticket
 #7 - Cache
 #8 - Logging all requests + response

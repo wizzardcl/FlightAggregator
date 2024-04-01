@@ -7,5 +7,5 @@ namespace FlightsAggregator.Services;
 public interface ISearchService
 {
 	IEnumerable<ProviderViewModel> GetProviders();
-	Task<SearchResultViewModel> Search(SearchViewModel model);
+	Task<SearchResultViewModel[]> Search(SearchViewModel model);
 }

@@ -9,6 +9,7 @@
 	<div class="col">
 		From:
 		<select class="form-select" @bind="_model.From">
+			<option>Select From</option>
 			@foreach (var airport in Airport.List)
 			{
 				<option value="@airport.Code">@airport.Name</option>
@@ -18,6 +19,7 @@
 	<div class="col">
 		To:
 		<select class="form-select" @bind="_model.To">
+			<option>Select To</option>
 			@foreach (var airport in Airport.List)
 			{
 				<option value="@airport.Code">@airport.Name</option>
@@ -29,7 +31,13 @@
 		<input class="form-control" @bind="_model.Time" type="date" />
 	</div>
 	<div class="col">
-		<button class="btn btn-primary" @onclick="Search">Search</button>
+		<input class="form-check-input" type="checkbox" value="" id="perProviderMode" @bind="_singleCallMode">
+		<label class="form-check-label" for="perProviderMode">
+			Single Call Mode
+		</label>
+	</div>
+	<div class="col">
+		<button class="btn btn-primary" disabled="@_loading" @onclick="Search">Search</button>
 	</div>
 </div>
 
@@ -40,18 +48,46 @@
 	</div>
 }
 
-@foreach (var searchResult in _searchResult)
-{
-	@foreach (var item in searchResult.Items)
-	{
-		<div class="row">
-			<div class="col">@item.Airline</div>
-			<div class="col">@item.Departure.ToShortTimeString()</div>
-			<div class="col">@item.Arrival.ToShortTimeString()</div>
-			<div class="col">@searchResult.ProviderName</div>
-		</div>
-	}
-}
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Airline
+			</th>
+
+			<th>
+				Departure
+			</th>
+
+			<th>
+				Arrival
+			</th>
+
+			<th>
+				Provider Name
+			</th>
+
+			<th></th>
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var searchResult in _searchResult)
+		{
+			@foreach (var item in searchResult.Items)
+			{
+				<tr>
+					<td>@item.Airline</td>
+					<td>@item.Departure.ToShortTimeString()</td>
+					<td>@item.Arrival.ToShortTimeString()</td>
+					<td>@searchResult.ProviderName</td>
+					<td><button class="btn btn-primary">Book</button></td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
@@ -60,6 +96,7 @@
 	private List<SearchResultViewModel> _searchResult = new List<SearchResultViewModel>();
 	private SearchViewModel _model = new SearchViewModel();
 	private bool _loading = false;
+	private bool _singleCallMode = true;
 
 	[Inject]
 	public HttpClient Http { get; set; }
@@ -67,29 +104,39 @@
 	private async Task Search()
 	{
 		_loading = true;
+		_searchResult = new List<SearchResultViewModel>();
 
-		if (_providers.Length == 0)
+		if (_singleCallMode)
 		{
-			_providers = await Http.GetFromJsonAsync<ProviderViewModel[]>("api/Search/get-providers");
+			var result = await Http.GetFromJsonAsync<SearchResultViewModel[]>($"api/search/get-for/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}");
+
+			_searchResult = result.ToList();
 		}
-
-		var tasks = new List<Task<SearchResultViewModel>>();
-		foreach (var provider in _providers)
+		else
 		{
-			var task = Task.Run(async () =>
+			if (_providers.Length == 0)
 			{
-				var result = await Http.GetFromJsonAsync<SearchResultViewModel>($"api/Search/get/{provider.Id}/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}");
+				_providers = await Http.GetFromJsonAsync<ProviderViewModel[]>("api/search/get-providers");
+			}
 
-				_searchResult.Add(result);
-				StateHasChanged();
+			var tasks = new List<Task<SearchResultViewModel[]>>();
+			foreach (var provider in _providers)
+			{
+				var task = Task.Run(async () =>
+				{
+					var result = await Http.GetFromJsonAsync<SearchResultViewModel[]>($"api/search/get-for/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}/{provider.Id}");
 
-				return result;
-			});
+					_searchResult.AddRange(result);
+					StateHasChanged();
 
-			tasks.Add(task);
+					return result;
+				});
+
+				tasks.Add(task);
+			}
+
+			_searchResult = (await Task.WhenAll(tasks.ToArray())).SelectMany(e => e).ToList();
 		}
-
-		_searchResult = (await Task.WhenAll(tasks.ToArray())).ToList();
 
 		_loading = false;
 	}
