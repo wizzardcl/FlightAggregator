@@ -1,7 +1,4 @@
-using FlightsAggregator.Services;
 using FlightsAggregator.Services.Implementations;
-using FlightsAggregator.Services.Implementations.SearchProviders;
-using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-builder.Services.AddTransient<ISearchService, SearchService>();
-builder.Services.AddTransient<ISearchProvider, RandomSearchProvider>();
-builder.Services.AddTransient<ISearchProvider, SlowRandomSearchProvider>();
-builder.Services.AddTransient<ISearchProvider, TimeoutSearchProvider>();
-builder.Services.AddTransient<ISearchProvider, ExceptionSearchProvider>();
+builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
 

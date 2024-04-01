@@ -15,5 +15,9 @@
     <ProjectReference Include="..\Client\FlightsAggregator.Client.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Files\" />
+  </ItemGroup>
+
 
 </Project>

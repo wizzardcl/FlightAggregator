@@ -1,5 +1,6 @@
 ﻿using FlightsAggregator.Shared;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,28 @@ namespace FlightsAggregator.Services.Implementations;
 public sealed class SearchService : ISearchService
 {
 	private readonly IEnumerable<ISearchProvider> _providers;
+	private readonly IOptions<SearchServiceOptions> _options;
 	private readonly ILogger<SearchService> _logger;
+	private readonly IEnumerable<IBookingProvider> _bookingProviders;
 
-	public SearchService(IEnumerable<ISearchProvider> providers, ILogger<SearchService> logger)
+	public SearchService(IOptions<SearchServiceOptions> options, ILogger<SearchService> logger,
+		IEnumerable<ISearchProvider> searchProviders, IEnumerable<IBookingProvider> bookingProviders)
 	{
-		_providers = providers.ToArray();
+		_providers = searchProviders.ToArray();
+		_options = options;
 		_logger = logger;
+		_bookingProviders = bookingProviders;
+	}
+
+	public async Task<BookResultViewModel> Book(BookViewModel model)
+	{
+		foreach (var booking in _bookingProviders)
+		{
+			var result = await booking.Book(model);
+			if (result) return new BookResultViewModel();
+		}
+
+		return new BookResultViewModel { Success = false, Message = "Item Not Found" };
 	}
 
 	public IEnumerable<ProviderViewModel> GetProviders()
@@ -36,38 +53,18 @@ public sealed class SearchService : ISearchService
 				try
 				{
 					var searchResultTask = providerClosing.Search(model);
-					if (searchResultTask.Wait(5000))
-						return new SearchResultViewModel
-						{
-							Items = searchResultTask.Result.ToArray(),
-							ProviderId = providerClosing.Id,
-							ProviderName = providerClosing.Name
-						};
+					if (searchResultTask.Wait(_options.Value.Timeout)) return new SearchResultViewModel(providerClosing.Id, providerClosing.Name, searchResultTask.Result.ToArray());
 				}
 				catch (Exception e)
 				{
 					_logger.LogError(e, $"Error in '{providerClosing.Id}'.");
 
-					return new SearchResultViewModel
-					{
-						Message = "Error",
-						Success = false,
-
-						ProviderId = providerClosing.Id,
-						ProviderName = providerClosing.Name
-					};
+					return new SearchResultViewModel(providerClosing.Id, providerClosing.Name, "Error");
 				}
 
 				_logger.LogError($"Time out for provider '{providerClosing.Id}'.");
 
-				return new SearchResultViewModel
-				{
-					Message = "Timeout",
-					Success = false,
-
-					ProviderId = providerClosing.Id,
-					ProviderName = providerClosing.Name
-				};
+				return new SearchResultViewModel(providerClosing.Id, providerClosing.Name, "Timeout");
 			}));
 		}
 

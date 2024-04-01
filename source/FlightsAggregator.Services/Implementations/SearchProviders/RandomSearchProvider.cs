@@ -8,28 +8,21 @@ namespace FlightsAggregator.Services.Implementations.SearchProviders;
 
 public sealed class RandomSearchProvider : ISearchProvider
 {
-	public Guid Id { get; } = Guid.Parse("59e29e05-2b38-4645-bc4e-8b8ab026d969");
+	private readonly IRandomDataGenerator _generator;
+
+	public static Guid IdValue { get; } = Guid.Parse("59e29e05-2b38-4645-bc4e-8b8ab026d969");
+	public Guid Id => IdValue;
 	public string Name => "Random";
+
+	public RandomSearchProvider(IRandomDataGenerator generator)
+	{
+		_generator = generator;
+	}
 
 	public Task<IEnumerable<SearchItemViewModel>> Search(SearchViewModel model)
 	{
-		if (model.CanUseProvider(Id)) return Task.FromResult(Enumerable.Empty<SearchItemViewModel>());
+		if (!model.CanUseProvider(Id)) return Task.FromResult(Enumerable.Empty<SearchItemViewModel>());
 
-		var result = new List<SearchItemViewModel>();
-		var random = new Random(DateTime.Now.Millisecond);
-
-		for (var i = 0; i < random.Next(2, 10); i++)
-		{
-			var departure = model.Time.Date.AddMinutes(random.Next(720));
-
-			result.Add(new SearchItemViewModel
-			{
-				Airline = "Britich Airlines",
-				Departure = departure,
-				Arrival = departure.AddMinutes(random.Next(720)),
-			});
-		}
-
-		return Task.FromResult<IEnumerable<SearchItemViewModel>>(result);
+		return Task.FromResult(_generator.Generate(model));
 	}
 }

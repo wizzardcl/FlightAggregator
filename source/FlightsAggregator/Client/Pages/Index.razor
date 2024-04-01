@@ -9,7 +9,6 @@
 	<div class="col">
 		From:
 		<select class="form-select" @bind="_model.From">
-			<option>Select From</option>
 			@foreach (var airport in Airport.List)
 			{
 				<option value="@airport.Code">@airport.Name</option>
@@ -19,7 +18,6 @@
 	<div class="col">
 		To:
 		<select class="form-select" @bind="_model.To">
-			<option>Select To</option>
 			@foreach (var airport in Airport.List)
 			{
 				<option value="@airport.Code">@airport.Name</option>
@@ -81,7 +79,7 @@
 					<td>@item.Departure.ToShortTimeString()</td>
 					<td>@item.Arrival.ToShortTimeString()</td>
 					<td>@searchResult.ProviderName</td>
-					<td><button class="btn btn-primary">Book</button></td>
+					<td><button class="btn btn-primary" @onclick="async () => await Book(searchResult.ProviderId, item.ResultId)">Book</button></td>
 				</tr>
 			}
 		}
@@ -94,7 +92,7 @@
 @code {
 	private ProviderViewModel[] _providers = Array.Empty<ProviderViewModel>();
 	private List<SearchResultViewModel> _searchResult = new List<SearchResultViewModel>();
-	private SearchViewModel _model = new SearchViewModel();
+	private SearchViewModel _model = new SearchViewModel { From = Airport.List[0].Code, To = Airport.List[1].Code };
 	private bool _loading = false;
 	private bool _singleCallMode = true;
 
@@ -139,5 +137,10 @@
 		}
 
 		_loading = false;
+	}
+
+	private async Task Book(Guid providerId, Guid resultId)
+	{
+		var result = await Http.PostAsJsonAsync("api/search", new BookViewModel { ProviderId = providerId, ResultId = resultId });
 	}
 }

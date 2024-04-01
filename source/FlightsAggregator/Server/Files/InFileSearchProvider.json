@@ -1,0 +1,8 @@
+[
+	{
+		"Airline": "France Airlines",
+		"Departure": "2020-01-01T11:00",
+		"Arrival": "2020-01-01T13:00",
+		"Cost": 10
+	}
+]

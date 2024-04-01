@@ -13,7 +13,7 @@ public sealed class ExceptionSearchProvider : ISearchProvider
 
 	public Task<IEnumerable<SearchItemViewModel>> Search(SearchViewModel model)
 	{
-		if (model.CanUseProvider(Id)) return Task.FromResult(Enumerable.Empty<SearchItemViewModel>());
+		if (!model.CanUseProvider(Id)) return Task.FromResult(Enumerable.Empty<SearchItemViewModel>());
 
 		throw new Exception($"An exception from '{nameof(ExceptionSearchProvider)}'.");
 	}

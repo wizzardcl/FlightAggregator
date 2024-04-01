@@ -26,4 +26,10 @@ public sealed class SearchController : ControllerBase
 	{
 		return _service.GetProviders();
 	}
+
+	[HttpPost]
+	public async Task<BookResultViewModel> Book(BookViewModel model)
+	{
+		return await _service.Book(model);
+	}
 }

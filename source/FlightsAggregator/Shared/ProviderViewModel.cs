@@ -16,16 +16,35 @@ public sealed class SearchResultViewModel
 	public string Message { get; set; } = string.Empty;
 
 	public SearchItemViewModel[] Items { get; set; } = Array.Empty<SearchItemViewModel>();
+
+	public SearchResultViewModel() { }
+
+	public SearchResultViewModel(Guid providerId, string providerName, string errorMessage)
+	{
+		ProviderId = providerId;
+		ProviderName = providerName;
+		Message = errorMessage;
+		Success = false;
+	}
+
+	public SearchResultViewModel(Guid providerId, string providerName, SearchItemViewModel[] items)
+	{
+		ProviderId = providerId;
+		ProviderName = providerName;
+		Items = items;
+	}
 }
 
 public sealed class SearchItemViewModel
 {
+	public Guid ResultId { get; set; }
 	public string Airline { get; set; } = string.Empty;
 	public DateTime Departure { get; set; }
 	public DateTime Arrival { get; set; }
+	public int Cost { get; set; }
 }
 
-public sealed class SearchViewModel
+public sealed class SearchViewModel : IProviderViewModel
 {
 	public Guid? ProviderId { get; set; }
 	public string From { get; set; }
@@ -52,4 +71,21 @@ public sealed class Airport
 	];
 }
 
+public interface IProviderViewModel
+{
+	Guid? ProviderId { get; }
+}
 
+public sealed class BookViewModel : IProviderViewModel
+{
+	public Guid ProviderId { get; set; }
+	public Guid ResultId { get; set; }
+
+	Guid? IProviderViewModel.ProviderId => ProviderId;
+}
+
+public sealed class BookResultViewModel
+{
+	public bool Success { get; set; }
+	public string Message { get; set; } = string.Empty;
+}

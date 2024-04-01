@@ -14,7 +14,7 @@ public sealed class TimeoutSearchProvider : ISearchProvider
 
 	public async Task<IEnumerable<SearchItemViewModel>> Search(SearchViewModel model)
 	{
-		if (model.CanUseProvider(Id)) return Enumerable.Empty<SearchItemViewModel>();
+		if (!model.CanUseProvider(Id)) return Enumerable.Empty<SearchItemViewModel>();
 
 		await Task.Delay(50000);
 
