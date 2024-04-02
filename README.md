@@ -16,7 +16,7 @@ Tasks:
 +11 - A few tests
 #12 - Docker file??
 #13 - Short description of the task and architecture of the app
-#14 - Cleanup code
++14 - Cleanup code
 +15 - Validation
 +16 - Use configurations
 +17 - Booking UI Message

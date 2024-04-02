@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightsAggregator.Server.Controllers;
 
+/// <summary>
+/// Test controller for Lufthansa provider
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public sealed class LufthansaController : ControllerBase
