@@ -1,6 +1,7 @@
 ﻿using FlightsAggregator.Services.Implementations.BookingProviders;
 using FlightsAggregator.Services.Implementations.SearchProviders;
 using FlightsAggregator.Services.Implementations.TicketsServices;
+using FlightsAggregator.Services.Validators;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,7 @@ public static class ServiceCollectionExtensions
 		@this.AddTransient<ITicketsServiceCacheProvider, TicketsService>();
 		@this.Configure<TicketsServiceOptions>(configuration.GetSection("SearchService"));
 		@this.AddTransient<ICache, InMemoryCache>();
+		@this.AddTransient<SearchViewModelValidator, SearchViewModelValidator>();
 
 		@this.AddTransient<ILufthansaService, LufthansaService>();
 

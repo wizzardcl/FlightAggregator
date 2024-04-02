@@ -1,4 +1,4 @@
-﻿using FlightsAggregator.Shared;
+﻿using FlightsAggregator.Shared.Tickets;
 using System.Collections.Generic;
 
 namespace FlightsAggregator.Services.Implementations.SearchProviders;

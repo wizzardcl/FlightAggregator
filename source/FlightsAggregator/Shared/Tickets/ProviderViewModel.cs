@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace FlightsAggregator.Shared;
+namespace FlightsAggregator.Shared.Tickets;
 
 public sealed class ProviderViewModel
 {
@@ -63,12 +64,12 @@ public sealed class Airport
 		Name = name;
 	}
 
-	public static Airport[] List { get; } =
-	[
-		new Airport("BER", "Berlin (Brandenburg)"),
-		new Airport("HHN", "Hahn (Rhineland-Palatinate)"),
-		new Airport("MAD", "Madrid (Madrid)")
-	];
+	public static Dictionary<string, Airport> List { get; } = new Dictionary<string, Airport>
+	{
+		{"BER", new Airport("BER", "Berlin (Brandenburg)") },
+		{"HHN", new Airport("HHN", "Hahn (Rhineland-Palatinate)") },
+		{"MAD", new Airport("MAD", "Madrid (Madrid)") }
+	};
 }
 
 public interface IProviderViewModel

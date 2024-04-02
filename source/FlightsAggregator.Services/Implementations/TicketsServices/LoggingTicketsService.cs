@@ -1,4 +1,4 @@
-﻿using FlightsAggregator.Shared;
+﻿using FlightsAggregator.Shared.Tickets;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;

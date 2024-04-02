@@ -1,5 +1,5 @@
-﻿using FlightsAggregator.Shared;
-using FlightsAggregator.Shared.Lufthansa;
+﻿using FlightsAggregator.Shared.Lufthansa;
+using FlightsAggregator.Shared.Tickets;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,6 @@
-﻿using FlightsAggregator.Shared;
+﻿using FlightsAggregator.Services.Validators;
+using FlightsAggregator.Shared.Tickets;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -14,14 +16,17 @@ public sealed class TicketsService : ITicketsServiceCacheProvider
 	private readonly IOptions<TicketsServiceOptions> _options;
 	private readonly ILogger<TicketsService> _logger;
 	private readonly IEnumerable<IBookingProvider> _bookingProviders;
+	private readonly SearchViewModelValidator _validator;
 
 	public TicketsService(IOptions<TicketsServiceOptions> options, ILogger<TicketsService> logger,
-			IEnumerable<ISearchProvider> searchProviders, IEnumerable<IBookingProvider> bookingProviders)
+			IEnumerable<ISearchProvider> searchProviders, IEnumerable<IBookingProvider> bookingProviders,
+			SearchViewModelValidator validator)
 	{
 		_providers = searchProviders.ToArray();
 		_options = options;
 		_logger = logger;
 		_bookingProviders = bookingProviders;
+		_validator = validator;
 	}
 
 	public async Task<BookResultViewModel> Book(BookViewModel model)
@@ -43,6 +48,8 @@ public sealed class TicketsService : ITicketsServiceCacheProvider
 
 	public async Task<SearchResultViewModel[]> Search(SearchViewModel model)
 	{
+		if (!_validator.Validate(model).IsValid) return Array.Empty<SearchResultViewModel>();
+
 		var tasks = new List<Task<SearchResultViewModel>>();
 
 		foreach (var provider in _providers)

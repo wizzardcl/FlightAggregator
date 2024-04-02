@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using FlightsAggregator.Shared.Tickets
 @using FlightsAggregator.Shared
 @using System.Text.Json
 
@@ -10,7 +11,7 @@
 	<div class="col">
 		From:
 		<select class="form-select" @bind="_model.From">
-			@foreach (var airport in Airport.List)
+			@foreach (var airport in Airport.List.Values)
 			{
 				<option value="@airport.Code">@airport.Name</option>
 			}
@@ -19,7 +20,7 @@
 	<div class="col">
 		To:
 		<select class="form-select" @bind="_model.To">
-			@foreach (var airport in Airport.List)
+			@foreach (var airport in Airport.List.Values)
 			{
 				<option value="@airport.Code">@airport.Name</option>
 			}
@@ -110,7 +111,7 @@
 @code {
 	private ProviderViewModel[] _providers = Array.Empty<ProviderViewModel>();
 	private List<SearchResultViewModel> _searchResult = new List<SearchResultViewModel>();
-	private SearchViewModel _model = new SearchViewModel { From = Airport.List[0].Code, To = Airport.List[1].Code };
+	private SearchViewModel _model = new SearchViewModel { From = Airport.List.First().Value.Code, To = Airport.List.Last().Value.Code };
 	private BookResultViewModel _bookingResult = new BookResultViewModel();
 	private bool _loading = false;
 	private bool _singleCallMode = true;
@@ -167,9 +168,9 @@
 		var response = await Http.PostAsJsonAsync("api/tickets", new BookViewModel { ProviderId = providerId, ResultId = resultId });
 		var responseContent = await response.Content.ReadAsStringAsync();
 		_bookingResult = JsonSerializer.Deserialize<BookResultViewModel>(responseContent, new JsonSerializerOptions
-		{
-			PropertyNameCaseInsensitive = true
-		});
+			{
+				PropertyNameCaseInsensitive = true
+			});
 		_displayBookingResult = true;
 
 		_booking = false;

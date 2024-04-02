@@ -19,4 +19,4 @@ Tasks:
 #14 - Cleanup code
 #15 - Validation
 +16 - Use configurations
-#17 - Booking UI Message
++17 - Booking UI Message

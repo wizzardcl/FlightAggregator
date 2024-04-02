@@ -1,5 +1,5 @@
 ﻿using FlightsAggregator.Services;
-using FlightsAggregator.Shared;
+using FlightsAggregator.Shared.Tickets;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightsAggregator.Server.Controllers;
