@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using FlightsAggregator.Shared
+@using System.Text.Json
 
 <PageTitle>Index</PageTitle>
 
@@ -79,22 +80,42 @@
 					<td>@item.Departure.ToShortTimeString()</td>
 					<td>@item.Arrival.ToShortTimeString()</td>
 					<td>@searchResult.ProviderName</td>
-					<td><button class="btn btn-primary" @onclick="async () => await Book(searchResult.ProviderId, item.ResultId)">Book</button></td>
+					<td><button class="btn btn-primary" disabled="@_booking" @onclick="async () => await Book(searchResult.ProviderId, item.ResultId)">Book</button></td>
 				</tr>
 			}
 		}
 	</tbody>
 </table>
 
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+@if (_displayBookingResult)
+{
+	<div class="modal fade show" id="exampleModalLive" tabindex="-1" aria-labelledby="exampleModalLiveLabel" style="display: block;" aria-modal="true" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLiveLabel">Completed with message:</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => _displayBookingResult = false"></button>
+				</div>
+				<div class="modal-body">
+					<p>@_bookingResult.Message</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="() => _displayBookingResult = false">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
 
 @code {
 	private ProviderViewModel[] _providers = Array.Empty<ProviderViewModel>();
 	private List<SearchResultViewModel> _searchResult = new List<SearchResultViewModel>();
 	private SearchViewModel _model = new SearchViewModel { From = Airport.List[0].Code, To = Airport.List[1].Code };
+	private BookResultViewModel _bookingResult = new BookResultViewModel();
 	private bool _loading = false;
 	private bool _singleCallMode = true;
+	private bool _booking = false;
+	private bool _displayBookingResult = false;
 
 	[Inject]
 	public HttpClient Http { get; set; }
@@ -106,7 +127,7 @@
 
 		if (_singleCallMode)
 		{
-			var result = await Http.GetFromJsonAsync<SearchResultViewModel[]>($"api/search/get-for/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}");
+			var result = await Http.GetFromJsonAsync<SearchResultViewModel[]>($"api/tickets/get-for/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}");
 
 			_searchResult = result.ToList();
 		}
@@ -114,7 +135,7 @@
 		{
 			if (_providers.Length == 0)
 			{
-				_providers = await Http.GetFromJsonAsync<ProviderViewModel[]>("api/search/get-providers");
+				_providers = await Http.GetFromJsonAsync<ProviderViewModel[]>("api/tickets/get-providers");
 			}
 
 			var tasks = new List<Task<SearchResultViewModel[]>>();
@@ -122,7 +143,7 @@
 			{
 				var task = Task.Run(async () =>
 				{
-					var result = await Http.GetFromJsonAsync<SearchResultViewModel[]>($"api/search/get-for/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}/{provider.Id}");
+					var result = await Http.GetFromJsonAsync<SearchResultViewModel[]>($"api/tickets/get-for/{_model.From}/{_model.To}/{_model.Time.ToString("yyyy-MM-dd")}/{provider.Id}");
 
 					_searchResult.AddRange(result);
 					StateHasChanged();
@@ -141,6 +162,16 @@
 
 	private async Task Book(Guid providerId, Guid resultId)
 	{
-		var result = await Http.PostAsJsonAsync("api/search", new BookViewModel { ProviderId = providerId, ResultId = resultId });
+		_booking = true;
+
+		var response = await Http.PostAsJsonAsync("api/tickets", new BookViewModel { ProviderId = providerId, ResultId = resultId });
+		var responseContent = await response.Content.ReadAsStringAsync();
+		_bookingResult = JsonSerializer.Deserialize<BookResultViewModel>(responseContent, new JsonSerializerOptions
+		{
+			PropertyNameCaseInsensitive = true
+		});
+		_displayBookingResult = true;
+
+		_booking = false;
 	}
 }

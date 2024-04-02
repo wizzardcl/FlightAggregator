@@ -6,11 +6,11 @@ namespace FlightsAggregator.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class SearchController : ControllerBase
+public sealed class TicketsController : ControllerBase
 {
-	private readonly ISearchService _service;
+	private readonly ITicketsService _service;
 
-	public SearchController(ISearchService service)
+	public TicketsController(ITicketsService service)
 	{
 		_service = service;
 	}

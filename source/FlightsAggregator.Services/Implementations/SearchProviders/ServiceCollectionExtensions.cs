@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
 		@this.AddTransient<ISearchProvider, ExceptionSearchProvider>();
 		@this.AddTransient<ISearchProvider, InFileSearchProvider>();
 		@this.AddTransient<IRandomDataGenerator, RandomDataGenerator>();
+		@this.AddTransient<ISearchProvider, LufthansaSearchProvider>();
 
 		return @this;
 	}

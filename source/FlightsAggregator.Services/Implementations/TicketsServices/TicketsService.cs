@@ -6,17 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FlightsAggregator.Services.Implementations;
+namespace FlightsAggregator.Services.Implementations.TicketsServices;
 
-public sealed class SearchService : ISearchService
+public sealed class TicketsService : ITicketsServiceCacheProvider
 {
 	private readonly IEnumerable<ISearchProvider> _providers;
-	private readonly IOptions<SearchServiceOptions> _options;
-	private readonly ILogger<SearchService> _logger;
+	private readonly IOptions<TicketsServiceOptions> _options;
+	private readonly ILogger<TicketsService> _logger;
 	private readonly IEnumerable<IBookingProvider> _bookingProviders;
 
-	public SearchService(IOptions<SearchServiceOptions> options, ILogger<SearchService> logger,
-		IEnumerable<ISearchProvider> searchProviders, IEnumerable<IBookingProvider> bookingProviders)
+	public TicketsService(IOptions<TicketsServiceOptions> options, ILogger<TicketsService> logger,
+			IEnumerable<ISearchProvider> searchProviders, IEnumerable<IBookingProvider> bookingProviders)
 	{
 		_providers = searchProviders.ToArray();
 		_options = options;
@@ -26,13 +26,14 @@ public sealed class SearchService : ISearchService
 
 	public async Task<BookResultViewModel> Book(BookViewModel model)
 	{
+		var context = new BookingContext(model);
 		foreach (var booking in _bookingProviders)
 		{
-			var result = await booking.Book(model);
-			if (result) return new BookResultViewModel();
+			await booking.Book(context);
+			if (context.Handled) return new BookResultViewModel { Success = context.Success, Message = context.Message };
 		}
 
-		return new BookResultViewModel { Success = false, Message = "Item Not Found" };
+		return new BookResultViewModel { Success = false, Message = "An issue with book your request." };
 	}
 
 	public IEnumerable<ProviderViewModel> GetProviders()
@@ -71,5 +72,34 @@ public sealed class SearchService : ISearchService
 		var result = await Task.WhenAll(tasks);
 
 		return result.ToArray();
+	}
+
+	private sealed class BookingContext : IBookingContext
+	{
+		private readonly BookViewModel _model;
+
+		public Guid ResultId => _model.ResultId;
+		public Guid? ProviderId => _model.ProviderId;
+		public bool Handled { get; private set; }
+		public bool Success { get; private set; } = true;
+		public string Message { get; private set; } = string.Empty;
+
+		public BookingContext(BookViewModel model)
+		{
+			_model = model;
+		}
+
+		public void Booked()
+		{
+			Handled = true;
+			Message = "Booked successfully.";
+		}
+
+		public void Failed(string message)
+		{
+			Handled = true;
+			Success = false;
+			Message = message;
+		}
 	}
 }

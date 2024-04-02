@@ -10,7 +10,8 @@ public sealed class SlowRandomSearchProvider : ISearchProvider
 {
 	private readonly IRandomDataGenerator _generator;
 
-	public Guid Id { get; } = Guid.Parse("f0f3e814-f8c8-42dc-ad4c-1404ae4bf2fc");
+	public static Guid IdValue { get; } = Guid.Parse("f0f3e814-f8c8-42dc-ad4c-1404ae4bf2fc");
+	public Guid Id => IdValue;
 	public string Name => "Slow Random";
 
 	public SlowRandomSearchProvider(IRandomDataGenerator generator)

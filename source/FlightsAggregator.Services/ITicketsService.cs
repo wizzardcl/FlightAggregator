@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace FlightsAggregator.Services;
 
-public interface ISearchService
+public interface ITicketsService
 {
 	Task<BookResultViewModel> Book(BookViewModel model);
 	IEnumerable<ProviderViewModel> GetProviders();

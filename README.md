@@ -8,11 +8,11 @@ Tasks:
 +4 - Handle and log exception from providers
 +5 - Provider's timeout
 +6 - Book a ticket
-#7 - Cache
-#8 - Logging all requests + response
++7 - Cache
++8 - Logging all requests + response
 +9 - Handle low latency providers
 
-#10 - Requests examples (OpenAPI format)
++10 - Requests examples (OpenAPI format)
 #11 - A few tests
 #12 - Docker file??
 #13 - Short description of the task and architecture of the app

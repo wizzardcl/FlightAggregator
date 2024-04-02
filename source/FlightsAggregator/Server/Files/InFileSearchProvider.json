@@ -1,8 +1,17 @@
 [
 	{
+		"Id": "29cd6279-2b52-40f9-920a-9ba29a02db22",
 		"Airline": "France Airlines",
 		"Departure": "2020-01-01T11:00",
 		"Arrival": "2020-01-01T13:00",
 		"Cost": 10
+	},
+
+	{
+		"Id": "29cd6279-2b52-40f9-920a-9ba29a02db25",
+		"Airline": "Europe Airlines",
+		"Departure": "2020-01-01T14:00",
+		"Arrival": "2020-01-01T19:50",
+		"Cost": 25
 	}
 ]

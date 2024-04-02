@@ -1,9 +1,8 @@
-﻿using FlightsAggregator.Shared;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace FlightsAggregator.Services.Implementations;
 
 public interface IBookingProvider
 {
-	Task<bool> Book(BookViewModel model);
+	Task Book(IBookingContext cnt);
 }

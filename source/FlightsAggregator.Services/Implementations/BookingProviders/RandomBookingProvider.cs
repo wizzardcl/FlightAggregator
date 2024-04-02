@@ -1,15 +1,16 @@
 ﻿using FlightsAggregator.Services.Implementations.SearchProviders;
-using FlightsAggregator.Shared;
 using System.Threading.Tasks;
 
 namespace FlightsAggregator.Services.Implementations.BookingProviders;
 
 public sealed class RandomBookingProvider : IBookingProvider
 {
-	public Task<bool> Book(BookViewModel model)
+	public Task Book(IBookingContext cnt)
 	{
-		if (!model.CanUseProvider(RandomSearchProvider.IdValue)) return Task.FromResult(false);
+		if (!cnt.CanUseProvider(RandomSearchProvider.IdValue) && !cnt.CanUseProvider(SlowRandomSearchProvider.IdValue)) return Task.CompletedTask;
 
-		return Task.FromResult(true);
+		cnt.Booked();
+
+		return Task.CompletedTask;
 	}
 }
