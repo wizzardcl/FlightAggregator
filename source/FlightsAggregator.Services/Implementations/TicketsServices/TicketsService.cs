@@ -1,6 +1,5 @@
 ﻿using FlightsAggregator.Services.Validators;
 using FlightsAggregator.Shared.Tickets;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -22,7 +21,7 @@ public sealed class TicketsService : ITicketsServiceCacheProvider
 			IEnumerable<ISearchProvider> searchProviders, IEnumerable<IBookingProvider> bookingProviders,
 			SearchViewModelValidator validator)
 	{
-		_providers = searchProviders.ToArray();
+		_providers = searchProviders;
 		_options = options;
 		_logger = logger;
 		_bookingProviders = bookingProviders;

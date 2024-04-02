@@ -13,10 +13,10 @@ Tasks:
 +9 - Handle low latency providers
 
 +10 - Requests examples (OpenAPI format)
-#11 - A few tests
++11 - A few tests
 #12 - Docker file??
 #13 - Short description of the task and architecture of the app
 #14 - Cleanup code
-#15 - Validation
++15 - Validation
 +16 - Use configurations
 +17 - Booking UI Message
